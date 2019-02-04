@@ -3,13 +3,15 @@ import {RecipeService} from '../recipes/recipe.service';
 import {HttpClient} from '@angular/common/http';
 import {Recipe} from '../recipes/recipe.model';
 import {map} from 'rxjs/operators';
+import {AuthService} from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
   constructor(private http: HttpClient,
-              private recipeService: RecipeService) {
+              private recipeService: RecipeService,
+              private authService: AuthService) {
   }
 
   storeRecipes() {
@@ -17,7 +19,8 @@ export class DataStorageService {
   }
 
   getRecipes() {
-    return this.http.get('https://ng-recipe-book-d4735.firebaseio.com/recipes.json')
+    const token = this.authService.getToken();
+    return this.http.get('https://ng-recipe-book-d4735.firebaseio.com/recipes.json?auth=' + token)
       .pipe(map(
         (recipes: Recipe[]) => {
           for (const recipe of recipes) {
